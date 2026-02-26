@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { useEditProduct } from "@/utils/editProduct";
 import type {Product} from '@/utils/editProduct'
 import { Trash2Icon } from "lucide-react";
+import { useUser } from "@/hooks/use-user";
 
 type ProductProps = {
     initialData?: Product
@@ -33,15 +34,27 @@ const CreateProductPage = () => {
 
 export function ProductForm({initialData}: ProductProps){
     const router = useRouter()
-    const user = useQuery(api.users.getCurrentUser)
+
+    const { user, isLoading, isAdmin } = useUser()
 
     const {edgestore} = useEdgeStore()
 
-    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => {
+        if (isLoading) {
+            return
+        }
 
-    useEffect(()=>{
-        setIsMounted(true);
-    }, []);
+        if (!user) {
+            router.push('/')
+            return
+        }
+
+        if (!isAdmin) {
+            router.push('/')
+            return
+        }
+
+    }, [isLoading, user, isAdmin, router])
 
     const setProductToEdit = useEditProduct(
         (state) => state.setProductToEdit
@@ -217,20 +230,6 @@ export function ProductForm({initialData}: ProductProps){
             images: images
         })
     }
-
-    useEffect(() =>{
-        if(user === null){
-            router.push('/')
-        }
-    }, [user, router])
-
-    useEffect(()=>{
-        if(user === undefined ) return;
-
-        if(isMounted && !user?.admin){
-            router.push('/')
-        }
-    }, [isMounted, user, router])
 
     if(user === undefined){
         return (

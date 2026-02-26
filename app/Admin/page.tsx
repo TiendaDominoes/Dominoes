@@ -10,10 +10,12 @@ import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 import { useEditProduct } from "@/utils/editProduct";
 import { useEffect } from "react";
+import { useUser } from "@/hooks/use-user";
 
 const DasboardPage = () => {
     const router = useRouter();
-    const user = useQuery(api.users.getCurrentUser)
+
+    const { user, isLoading, isAdmin } = useUser();
 
     const stats = useQuery(api.products.getProductsStats);
     const products = useQuery(api.products.getAllProducts);
@@ -31,21 +33,23 @@ const DasboardPage = () => {
         (state) => state.setProductToEdit
     );
 
-    useEffect(() =>{
-        if(user === null){
-            router.push('/')
+    useEffect(() => {
+        if (isLoading) {
+            return;
         }
-    }, [user, router])
 
-    useEffect(()=>{
-        if(user === undefined ) return;
-        
-        if(!user?.admin){
-            router.push('/')
+        if (!user) {
+            router.push('/');
+            return;
         }
-    }, [user, router])
 
-    if(user === undefined){
+        if (!isAdmin) {
+            router.push('/');
+            return;
+        }
+    }, [user, isAdmin, isLoading, router]);
+
+    if(isLoading){
         return (
             <div className="w-full flex items-center justify-center">
                 <div className="w-[90%] md:w-[80%] flex flex-col justify-center items-center">
@@ -64,6 +68,8 @@ const DasboardPage = () => {
                             
         )
     };
+
+    if(!isAdmin || !user) return null; 
 
     return (
         <div className="w-full flex items-center justify-center">

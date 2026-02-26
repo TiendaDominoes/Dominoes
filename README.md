@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+```markdown
+# 🎲 Dominoes | Tu mesa de juegos
 
-## Getting Started
+Aplicación de ecommerce moderna construida con **Next.js**, **Convex**, **Clerk** y **Mercado Pago**. Diseñada con arquitectura escalable y enfoque en seguridad.
 
-First, run the development server:
+## ✨ Características Principales
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 🛒 **Compra directa** de un solo producto
+- 🛍️ **Checkout completo** desde carrito
+- 🔐 **Autenticación segura** con Clerk (roles admin/cliente)
+- 💳 **Pagos reales** con Mercado Pago (Checkout Pro)
+- 📦 **Gestión de órdenes** en backend con validación de precios
+- 👑 **Panel de administración** para gestión de productos
+- ⚡ **Actualizaciones en tiempo real** con Convex
+
+## 🚀 Tecnologías
+
+| Tecnología | Uso |
+|------------|-----|
+| [Next.js](https://nextjs.org/) (App Router) | Framework principal |
+| [Clerk](https://clerk.com/) | Autenticación y usuarios |
+| [Convex](https://www.convex.dev/) | Backend serverless + BD en tiempo real |
+| [Mercado Pago](https://www.mercadopago.com.ar/) | Procesamiento de pagos |
+| [Zustand](https://github.com/pmndrs/zustand) | Estado temporal (checkout) |
+| [Context API](https://react.dev/reference/react/useContext) | Estado del carrito |
+
+## 🏗️ Arquitectura
+
+### Flujo de Compra Directa
+
+```mermaid
+graph LR
+    A[Click Comprar] --> B[Zustand: guarda producto]
+    B --> C[Redirige a /checkout]
+    C --> D[Convex: consulta producto]
+    D --> E[Convex: crea orden]
+    E --> F[Mercado Pago: genera preferencia]
+    F --> G[Usuario paga]
+    G --> H[Webhook confirma]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Flujo de Compra desde Carrito
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```mermaid
+graph LR
+    A[Agregar al carrito] --> B[Context API]
+    B --> C[Click Checkout]
+    C --> D[Limpia compra directa]
+    D --> E[Usa productos del carrito]
+    E --> F[Convex: valida precios]
+    F --> G[Convex: crea orden]
+    G --> H[Mercado Pago: genera preferencia]
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📁 Estructura del Proyecto
 
-## Learn More
+```
+📦 dominoes
+├── 📱 app/                    # Next.js App Router
+│   ├── 🏠 page.tsx            # Home
+│   ├── 📦 product/            # Página de producto
+│   ├── 💳 checkout/           # Checkout
+│   ├── 👑 dashboard/          # Panel admin
+│   └── 📡 api/                 # API routes
+├── ⚡ convex/                  # Backend Convex
+│   ├── 📄 products.ts          # Productos
+│   ├── 📄 orders.ts            # Órdenes
+│   └── 📄 users.ts             # Usuarios + sync con Clerk
+├── 🗂️ stores/                  # Zustand stores
+│   └── checkoutStore.ts
+├── 🛒 context/                  # Context API
+│   └── cartContext.tsx
+├── 🪝 hooks/                    # Custom hooks
+│   ├── useUser.ts              # Hook de usuario + admin
+│   └── useCheckout.ts
+└── 📦 components/               # Componentes reutilizables
+```
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Instalación y Uso
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Clonar repositorio
+git clone https://github.com/TiendaDominoes/Dominoes
 
-## Deploy on Vercel
+# Instalar dependencias
+npm install
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Iniciar Convex (desarrollo)
+npx convex dev
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Iniciar app
+npm run dev
+```
+
+La app estará disponible en `http://localhost:3000`
+
+## 👑 Roles de Usuario
+
+### Admin
+- Crear y gestionar productos
+- Ver todas las órdenes
+- Acceso al dashboard
+
+### Cliente
+- Navegar productos
+- Agregar al carrito
+- Realizar compras
+- Ver historial de órdenes
+
+## 📦 Scripts Disponibles
+
+```bash
+npm run dev          # Desarrollo
+npm run build        # Build producción
+npm run start        # Iniciar producción
+npm run lint         # Linter
+npx convex dev       # Desarrollar Convex
+npx convex deploy    # Deploy Convex
+```

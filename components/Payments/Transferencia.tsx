@@ -3,8 +3,9 @@
 import { api } from "@/convex/_generated/api";
 import { useCart } from "@/providers/cart-provider";
 import { useMutation, useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { CreditCard } from "../shared-assets/credit-card/credit-card";
 
 interface CustomerData {
     nombre: string;
@@ -21,15 +22,38 @@ interface ShippingData {
     estado: string;
 }
 
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+}
+
 interface Props {
     url?: string;
     customerData: CustomerData;
     shippingData: ShippingData;
 }
 
-const CheckoutMP = ({url, customerData, shippingData}: Props) => {
+const Modal: FC<ModalProps> = ({ isOpen, onClose, children }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50"onClick={onClose}>
+            <div className="bg-white rounded-lg w-96" onClick={(e) => e.stopPropagation()}>
+                <div className="p-4 border-b flex justify-between items-center">
+                    <h2 className="text-lg font-semibold">Datos de la transferencia</h2>
+                    <button onClick={onClose} className="text-xl">×</button>
+                </div>
+                {children}
+            </div>
+        </div>
+    );
+};
+
+const Transferencia = ({url, customerData, shippingData}: Props) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [mounted, setMounted] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     const [validatedItems, setValidatedItems] = useState<any[]>([]);
     const [validating, setIsValidating] = useState<boolean>(false)
 
@@ -125,7 +149,7 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                 (sum, item) => sum + (item.price * item.quantity), 
                 0
             );
-
+            
             const orderId = await createOrder({
                 name: customerData.nombre,
                 email: customerData.email,
@@ -146,8 +170,9 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                 total,
             });
 
-            const order = useQuery(api.orders.getOrder, { orderId });
-                            
+
+            const order = await useQuery(api.orders.getOrder, { orderId });
+
             if (order) {
                 const orderData = {
                     orderId,
@@ -172,52 +197,6 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                     })
                 });
             }
-
-            const payload = {
-                items: validatedItems.map((item: any) => ({
-                    id: item._id,
-                    title: item.name,
-                    description: item.name,
-                    quantity: item.quantity,
-                    unit_price: Number(item.price),
-                    currency_id: "MX",
-                    picture_url: item.image || ''
-                })),
-                external_reference: `CART-${Date.now()}`,
-                payer: {
-                    name: customerData.nombre,
-                    email: customerData.email,
-                    phone: { number: customerData.telefono.toString() },
-                    address: {
-                        street: shippingData.calle,
-                        city: shippingData.ciudad,
-                        zip: shippingData.cp.toString()
-                    }
-                },
-                redirect_mode: 'blank'
-            }
-
-            const res = await fetch('/api/create-preference', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            })
-        
-            const data = await res.json();
-        
-            if(!res.ok){
-                toast.error('Hubo un problema con la compra')
-                throw new Error('Error al comprar')
-            }
-        
-            if(data.initPoint){
-                window.location.href = data.initPoint;
-            }else{
-                toast.error('Hubo un problema con la compra')
-                throw new Error('No se recibio initpoint')
-            }
         } catch (error: any){
             toast.error('Hubo un problema con la compra')
         } finally {
@@ -240,8 +219,18 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
     }
 
     return (
-        <button onClick={handlePay} disabled={!mounted || loading} className={`bg-[#B86112] hover:bg-[#cb7818] font-semibold text-white px-4 py-2 rounded-lg transition-colors duration-300 ${mounted ? "cursor-pointer" : "cursor-no-drop"}`}>MERCADO PAGO</button>
+        <div>
+            <button onClick={()=> setIsOpen(true)} disabled={!mounted || loading} className={`bg-gray-900 hover:bg-gray-700 font-semibold text-white px-4 py-2 rounded-lg transition-colors duration-300 ${mounted ? "cursor-pointer" : "cursor-no-drop"}`}>TRANSFERENCIA</button>
+            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                <div className="p-4 flex justify-center">
+                    <CreditCard type="gray-dark"/>
+                </div>
+                <div className="p-4 border-t flex justify-end items-center">
+                    <button onClick={handlePay} className="bg-[#B86112] hover:bg-[#cb7818] font-semibold text-white px-4 py-2 rounded-lg transition-colors duration-300">Listo</button>
+                </div>
+            </Modal>
+        </div>
     );
 }
  
-export default CheckoutMP;
+export default Transferencia;

@@ -13,6 +13,7 @@ import SearchCommand from '@/components/Search';
 import { CartProvider } from '@/providers/cart-provider';
 import { AuthSync } from '@/context/AuthSync';
 import Head from 'next/head';
+import Whatsapp from '@/components/Whatsapp';
 
 const workSans = Work_Sans({subsets: ["latin"]});
 
@@ -54,6 +55,7 @@ export default function RootLayout({
               <Navbar/>
               <SearchCommand/>
               {children}
+              <Whatsapp/>
               <Footer/>
             </CartProvider>
           </EdgeStoreProvider>

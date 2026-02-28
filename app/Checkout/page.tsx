@@ -11,6 +11,7 @@ import { CartItem } from "@/context/CartContext";
 import { Minus, Plus } from "lucide-react";
 import CheckoutMP from "@/components/Payments/MercadoPagoCart";
 import { toast } from "sonner";
+import Transferencia from "@/components/Payments/Transferencia";
 
 interface Contacto {
     nombre: string;
@@ -326,6 +327,7 @@ const Checkout = () => {
                         <>
                             <h2 className='text-4xl font-semibold mb-4'>Importante</h2>
                             <p className="text-lg mb-4">Serás redirigido a MercadoPago para finalizar tu compra de forma segura.<br/>
+                            En dado caso requeras hacer una transferencia bancaria, selecciona la opción de transferencia.<br/>
                             Asegúrate de revisar toda la información antes de proceder. ¡Gracias por tu compra!</p>    
                             <p className="text-md italic text-gray-600">Nota: Después de completar tu compra, 
                                 nos pondremos en contacto contigo a través de WhatsApp para confirmar los detalles de tu pedido y personalización. 
@@ -365,7 +367,10 @@ const Checkout = () => {
                                 
                                 <div className='flex justify-end mt-2'>
                                     {validated ? (
-                                        <CheckoutMP url={url} customerData={customerData} shippingData={shippingData}/>
+                                        <div className="flex flex-row gap-4">
+                                            <Transferencia url={url} customerData={customerData} shippingData={shippingData}/>
+                                            <CheckoutMP url={url} customerData={customerData} shippingData={shippingData}/>
+                                        </div>
                                     ): (
                                         <button disabled className={`bg-neutral-500 font-semibold text-white px-4 py-2 rounded-lg transition-colors duration-300 cursor-not-allowed`}>
                                             COMPRAR
@@ -445,7 +450,10 @@ const Checkout = () => {
                                     
                                     <div className='flex justify-end mt-2'>
                                         {validated ? (
-                                            <CheckoutMP customerData={customerData} shippingData={shippingData}/>
+                                            <div className="flex flex-row gap-4">
+                                                <Transferencia customerData={customerData} shippingData={shippingData}/>
+                                                <CheckoutMP customerData={customerData} shippingData={shippingData}/>
+                                            </div>
                                         ): (
                                             <button disabled className={`bg-neutral-500 font-semibold text-white px-4 py-2 rounded-lg transition-colors duration-300 cursor-not-allowed`}>
                                                 COMPRAR

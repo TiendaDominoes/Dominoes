@@ -47,8 +47,6 @@ export async function POST(request: Request) {
                         sendCustomerEmail(orderData),
                         sendAdminEmail(orderData)
                     ]);
-
-                    console.log('✅ Emails enviados');
                 }
             }
         }

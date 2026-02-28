@@ -22,8 +22,9 @@ const Footer = () => {
     return (
         <footer className="flex items-center justify-center pt-8 bg-white">
             <div className="w-[90%] flex flex-col items-center justify-center max-w-300">
-                <Link href={'/'}>
+                <Link href={'/'} className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
                     <img src="/logo.jpg" alt="Logo Dominoes" className="h-16 mb-4"/>
+                    <img src="/logo-home.jpg" alt="Logo Dominoes" className="h-16 mb-4"/>
                 </Link>
                 <p className="text-black font-normal text-lg mb-8">Tu mesa de juegos</p>
                 <div className="flex flex-col md:flex-row gap-8 mb-8 md:mb-12">

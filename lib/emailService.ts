@@ -36,6 +36,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendCustomerEmail = async (orderData: OrderData) => {
+    console.log('Enviando correo al cliente:', orderData.customerData.email);
     const itemsList = orderData.items.map(item => `
         <tr>
             <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.name}</td>
@@ -48,7 +49,7 @@ export const sendCustomerEmail = async (orderData: OrderData) => {
     const mailOptions = {
         from: `"Dominoes | Tu mesa de juegos" <${process.env.EMAIL_USER}>`,
         to: orderData.customerData.email,
-        subject: `Confirmación de compra - Orden #${orderData.orderId}`,
+        subject: `📝 Orden creada - Pendiente de pago #${orderData.orderId}`,
         html: `
             <!DOCTYPE html>
             <html>
@@ -59,23 +60,41 @@ export const sendCustomerEmail = async (orderData: OrderData) => {
                     .header { background-color: #B86112; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
                     .content { background-color: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px; }
                     .order-details { background-color: white; padding: 15px; border-radius: 8px; margin: 20px 0; }
-                    table { width: 100%; border-collapse: collapse; }
+                    .payment-pending { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; }
+                    .payment-pending h3 { margin-top: 0; color: #856404; }
+                    .payment-button { background-color: #B86112; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 15px 0; font-weight: bold; }
+                    .payment-button:hover { background-color: #9a4c0f; }
+                    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
                     th { background-color: #f0f0f0; padding: 8px; text-align: left; }
+                    td { padding: 8px; border-bottom: 1px solid #ddd; }
                     .total { font-size: 18px; font-weight: bold; color: #B86112; text-align: right; margin-top: 20px; }
-                    .footer { text-align: center; margin-top: 20px; color: #666; }
+                    .contact-info { background-color: #e9ecef; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; }
+                    .contact-info p { margin: 5px 0; }
+                    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                    .warning { color: #dc3545; font-weight: bold; }
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="header">
-                        <h1>¡Gracias por tu compra!</h1>
+                        <h1>¡Orden creada exitosamente!</h1>
                     </div>
+                    
                     <div class="content">
                         <p>Hola <strong>${orderData.customerData.name}</strong>,</p>
-                        <p>Hemos recibido tu orden correctamente. Nos comunicaremos contigo en breve para personalizar tu pedido.</p>
+                        <p>Hemos recibido tu solicitud de orden. <strong class="warning">Tu pago está pendiente</strong> para confirmar la compra.</p>
                         
+                        <!-- SECCIÓN IMPORTANTE: PAGO PENDIENTE -->
+                        <div class="payment-pending">
+                            <h3>⏳ PAGO PENDIENTE</h3>
+                            <p>Tu orden ha sido creada pero aún no has realizado el pago.</p>
+                            <p><strong>Completa el pago para confirmar tu orden:</strong></p>
+                        </div>
+                        
+                        <!-- DETALLES DE LA ORDEN -->
                         <div class="order-details">
                             <h3>Detalles de la orden #${orderData.orderId}</h3>
+                            <p><strong>Fecha:</strong> ${new Date().toLocaleDateString()}</p>
                             
                             <h4>Productos:</h4>
                             <table>
@@ -93,7 +112,7 @@ export const sendCustomerEmail = async (orderData: OrderData) => {
                             </table>
                             
                             <div class="total">
-                                Total: $${formatearMoneda(orderData.total)}
+                                Total a pagar: $${formatearMoneda(orderData.total)}
                             </div>
                             
                             <h4>Datos de envío:</h4>
@@ -109,10 +128,27 @@ export const sendCustomerEmail = async (orderData: OrderData) => {
                             ` : ''}
                         </div>
                         
-                        <p>Si tienes alguna pregunta, responde a este correo o comunicate via whatsapp al +52 81-3234-9830.</p>
+                        <!-- INFORMACIÓN SOBRE PERSONALIZACIÓN -->
+                        <div class="contact-info">
+                            <h3>🔄 Proceso de personalización</h3>
+                            <p>Una vez que confirmes tu pago, nos pondremos en contacto contigo para proceder con la personalización de tu producto.</p>
+                            <p>Si ya realizaste el pago y no has recibido noticias nuestras en 24 horas, por favor contáctanos:</p>
+                            <p><strong>📱 WhatsApp:</strong> <a href="https://wa.me/528132349830" style="color: #B86112;">+52 81-3234-9830</a></p>
+                            <p><strong>📧 Email:</strong> <a href="mailto:ventas@dominoes.com" style="color: #B86112;">ventas@dominoes.com</a></p>
+                        </div>
+                        
+                        <!-- NOTA SOBRE DUPLICIDAD -->
+                        <p style="font-size: 13px; color: #666; font-style: italic; margin-top: 20px;">
+                            <strong>¿Ya realizaste el pago?</strong> Si ya realizaste el pago y recibiste este correo por error, 
+                            por favor contáctanos inmediatamente para verificar el estado de tu orden.
+                        </p>
+                        
+                        <p>¡Gracias por preferirnos!</p>
                     </div>
+                    
                     <div class="footer">
                         <p>© ${new Date().getFullYear()} Dominoes | Tu mesa de juegos. Todos los derechos reservados.</p>
+                        <p>Este es un correo automático, por favor no responder directamente.</p>
                     </div>
                 </div>
             </body>
@@ -128,6 +164,7 @@ export const sendCustomerEmail = async (orderData: OrderData) => {
 };
 
 export const sendAdminEmail = async (orderData: OrderData) => {
+    console.log('Enviando correo al admin:', process.env.ADMIN_EMAIL);
     const itemsList = orderData.items.map(item => `
         <tr>
             <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.name}</td>
@@ -138,49 +175,47 @@ export const sendAdminEmail = async (orderData: OrderData) => {
     `).join('');
 
     const mailOptions = {
-        from: `"Sistema de Ventas" <${process.env.EMAIL_USER}>`,
+        from: `"Dominoes | Ventas" <${process.env.EMAIL_USER}>`,
         to: process.env.ADMIN_EMAIL,
-        subject: `NUEVA VENTA - Orden #${orderData.orderId}`,
+        subject: `🆕 NUEVA ORDEN PENDIENTE DE PAGO - #${orderData.orderId}`,
         html: `
             <!DOCTYPE html>
             <html>
             <head>
                 <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .header { background-color: #28a745; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-                    .content { background-color: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px; }
-                    .customer-info { background-color: white; padding: 15px; border-radius: 8px; margin: 20px 0; }
+                    body { font-family: Arial, sans-serif; }
+                    .container { max-width: 600px; margin: 0 auto; }
+                    .header { background-color: #dc3545; color: white; padding: 20px; text-align: center; }
+                    .content { padding: 20px; }
+                    .warning { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin: 10px 0; }
                     table { width: 100%; border-collapse: collapse; }
-                    th { background-color: #f0f0f0; padding: 8px; text-align: left; }
-                    .total { font-size: 18px; font-weight: bold; color: #28a745; text-align: right; margin-top: 20px; }
+                    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="header">
-                        <h1>¡Nueva Venta Realizada!</h1>
+                        <h1>NUEVA ORDEN - PAGO PENDIENTE</h1>
                     </div>
                     <div class="content">
-                        <p><strong>Orden:</strong> #${orderData.orderId}</p>
-                        <p><strong>Fecha:</strong> ${new Date().toLocaleString()}</p>
-                        
-                        <div class="customer-info">
-                            <h3>Datos del Cliente:</h3>
-                            <p>
-                                <strong>Nombre:</strong> ${orderData.customerData.name}<br>
-                                <strong>Email:</strong> ${orderData.customerData.email}<br>
-                                <strong>Teléfono:</strong> ${orderData.customerData.telefono}<br>
-                                ${orderData.customerData.mensaje ? `<strong>Notas:</strong> ${orderData.customerData.mensaje}<br>` : ''}
-                            </p>
-                            
-                            <h3>Dirección de envío:</h3>
-                            <p>
-                                ${orderData.shippingData.calle}<br>
-                                ${orderData.shippingData.colonia}<br>
-                                ${orderData.shippingData.ciudad}, ${orderData.shippingData.estado} CP ${orderData.shippingData.cp}
-                            </p>
+                        <div class="warning">
+                            <strong>ESTADO:</strong> Pendiente de pago - Confirmar con el cliente antes de proceder.
                         </div>
+                        
+                        <h3>Datos del cliente:</h3>
+                        <p>
+                            <strong>Nombre:</strong> ${orderData.customerData.name}<br>
+                            <strong>Email:</strong> ${orderData.customerData.email}<br>
+                            <strong>Teléfono:</strong> ${orderData.customerData.telefono}<br>
+                            ${orderData.customerData.mensaje ? `<strong>Notas:</strong> ${orderData.customerData.mensaje}` : ''}
+                        </p>
+                        
+                        <h3>Dirección de envío:</h3>
+                        <p>
+                            ${orderData.shippingData.calle}<br>
+                            ${orderData.shippingData.colonia}<br>
+                            ${orderData.shippingData.ciudad}, ${orderData.shippingData.estado} CP ${orderData.shippingData.cp}
+                        </p>
                         
                         <h3>Productos:</h3>
                         <table>
@@ -197,17 +232,13 @@ export const sendAdminEmail = async (orderData: OrderData) => {
                             </tbody>
                         </table>
                         
-                        <div class="total">
-                            Total: $${formatearMoneda(orderData.total)}
-                        </div>
-                        
-                        ${orderData.paymentId ? `<p><strong>ID de pago:</strong> ${orderData.paymentId}</p>` : ''}
+                        <h3>Total: $${formatearMoneda(orderData.total)}</h3>
                     </div>
                 </div>
             </body>
             </html>
         `
-    };
+}   ;
 
     try {
         await transporter.sendMail(mailOptions);

@@ -26,7 +26,6 @@ const Footer = () => {
                     <img src="/logo.jpg" alt="Logo Dominoes" className="h-16 mb-4"/>
                     <img src="/logo-home.jpg" alt="Logo Dominoes" className="h-16 mb-4"/>
                 </Link>
-                <p className="text-black font-normal text-lg mb-8">Tu mesa de juegos</p>
                 <div className="flex flex-col md:flex-row gap-8 mb-8 md:mb-12">
                     <div className="flex flex-col items-center">
                         <div className="flex gap-8 mb-2">

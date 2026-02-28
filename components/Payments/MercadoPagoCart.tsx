@@ -146,32 +146,28 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                 total,
             });
 
-            const order = useQuery(api.orders.getOrder, { orderId });
-                            
-            if (order) {
-                const orderData = {
-                    orderId,
-                    customerData: order.customerData,
-                    shippingData: order.shippingAddress,
-                    items: order.items,
-                    total: order.total,
-                };
+            const orderData = {
+                orderId,
+                customerData: customerData,
+                shippingData: shippingData,
+                items: validatedItems,
+                total: total,
+            };
                     
-                await fetch('/api/send-order-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        orderData: {
-                            orderId,
-                            customerData,
-                            shippingData,
-                            items: validatedItems,
-                            total,
-                        },
-                        type: 'both'
-                    })
-                });
-            }
+            await fetch('/api/send-order-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderData: {
+                        orderId: orderData.orderId,
+                        customerData: orderData.customerData,
+                        shippingData: orderData.shippingData,
+                        items: orderData.items,
+                        total: orderData.total,
+                    },
+                    type: 'both'
+                })
+            });
 
             const payload = {
                 items: validatedItems.map((item: any) => ({

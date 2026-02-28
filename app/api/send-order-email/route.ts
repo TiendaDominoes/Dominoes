@@ -143,7 +143,7 @@ export async function POST(request: Request) {
         if (type === 'admin' || type === 'both') {
             const mailOptions = {
                     from: `"Dominoes | Ventas" <${process.env.EMAIL_USER}>`,
-                    to: process.env.ADMIN_EMAIL,
+                    to: process.env.EMAIL_USER,
                     subject: `🆕 NUEVA ORDEN PENDIENTE DE PAGO - #${orderData.orderId}`,
                     html: `
                         <!DOCTYPE html>

@@ -22,7 +22,7 @@ const Footer = () => {
     return (
         <footer className="flex items-center justify-center pt-8 bg-white">
             <div className="w-[90%] flex flex-col items-center justify-center max-w-300">
-                <Link href={'/'} className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                <Link href={'/'} className="flex flex-col md:flex-row items-center gap-8 md:gap-12 mb-8">
                     <img src="/logo.jpg" alt="Logo Dominoes" className="h-16 mb-4"/>
                     <img src="/logo-home.jpg" alt="Logo Dominoes" className="h-16 mb-4"/>
                 </Link>

@@ -115,7 +115,7 @@ export async function POST(request: Request) {
                                         <p>Una vez que confirmes tu pago, nos pondremos en contacto contigo para proceder con la personalización de tu producto.</p>
                                         <p>Si ya realizaste el pago y no has recibido noticias nuestras en 24 horas, por favor contáctanos:</p>
                                         <p><strong>📱 WhatsApp:</strong> <a href="https://wa.me/528132349830" style="color: #B86112;">+52 81-3234-9830</a></p>
-                                        <p><strong>📧 Email:</strong> <a href="mailto:ventas@dominoes.com" style="color: #B86112;">ventas@dominoes.com</a></p>
+                                        <p><strong>📧 Email:</strong> <a href="mailto:ventas.dominoes@gmail.com" style="color: #B86112;">ventas.dominoes@gmail.com</a></p>
                                     </div>
                                     
                                     <!-- NOTA SOBRE DUPLICIDAD -->

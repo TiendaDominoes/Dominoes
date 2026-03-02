@@ -58,11 +58,11 @@ export default defineSchema({
         })),
 
         total: v.number(),
-        status: v.string(),
+        payed: v.boolean(),
         createdAt: v.number(),
         updatedAt: v.number(),
     })
     .index("by_userId", ["userId"])
-    .index("by_status", ["status"])
+    .index("by_payed", ["payed"])
     .index("by_createdAt", ["createdAt"]),
 });

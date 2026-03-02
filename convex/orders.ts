@@ -1,4 +1,4 @@
-// convex/orders.ts
+import { toast } from "sonner";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
@@ -45,7 +45,7 @@ export const createOrder = mutation({
             },
             items: args.items,
             total: args.total,
-            status: 'Por confirmar',
+            payed: false,
             createdAt: Date.now(),
             updatedAt: Date.now(),
         });
@@ -54,41 +54,52 @@ export const createOrder = mutation({
     }
 });
 
-// Query para obtener órdenes de un usuario
-export const getUserOrders = query({
+export const updateOrderPayment = mutation({
     args: {
-        userId: v.string(),
-    },
-    handler: async (ctx, args) => {
-        return await ctx.db
-            .query("orders")
-            .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-            .order("desc")
-            .collect();
+        orderId: v.id("orders"),
+    }, handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity()
+
+        if(!identity) throw new Error('No autenticado')
+
+        const user = await ctx.db.query("users")
+            .filter(q => q.eq(q.field("clerkId"), identity.subject))
+            .unique()
+            
+        if(!user?.admin){
+            throw new Error('No autorizado')
+        }
+
+        const order = await ctx.db.get(args.orderId)
+
+        if(!order) {
+            toast.error("Error al actualizar")
+        }
+
+        const update = ctx.db.patch(args.orderId, {
+            payed: !order?.payed,
+        })
+        
+        return update
     }
+})
+
+export const getAllOrders = query({
+    args: {},
+    handler: async (ctx) => {
+        const orders = await ctx.db
+            .query("orders").order("desc").collect();
+
+        return orders;
+    },
 });
 
-// Query para obtener una orden específica
-export const getOrder = query({
+
+export const removeOrder = mutation({
     args: {
         orderId: v.id("orders"),
     },
-    handler: async (ctx, args) => {
-        return await ctx.db.get(args.orderId);
-    }
-});
-
-// Mutation para actualizar estado de orden
-export const updateOrderStatus = mutation({
-    args: {
-        orderId: v.id("orders"),
-        status: v.string(),
-        paymentId: v.optional(v.string()),
-    },
-    handler: async (ctx, args) => {
-        await ctx.db.patch(args.orderId, {
-            status: args.status,
-            updatedAt: Date.now(),
-        });
+    handler: async (ctx, args) => {        
+        return await ctx.db.delete(args.orderId);
     }
 });

@@ -11,6 +11,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useEditProduct } from "@/utils/editProduct";
 import { useEffect } from "react";
 import { useUser } from "@/hooks/use-user";
+import { updateOrderPayment } from "@/convex/orders";
 
 const DasboardPage = () => {
     const router = useRouter();
@@ -20,14 +21,36 @@ const DasboardPage = () => {
     const stats = useQuery(api.products.getProductsStats);
     const products = useQuery(api.products.getAllProducts);
     const updateStock = useMutation(api.products.updateStock);
+    const orders = useQuery(api.orders.getAllOrders);
+    const updateOrderPayment = useMutation(api.orders.updateOrderPayment);
 
     const handleCreate = () => {
         router.push('/Admin/Create');
     }
 
+    const removeProduct = useMutation(api.products.removeProduct)
+    
+    const handleRemoveProduct = (url: string) => {
+        removeProduct({
+            url: url
+        })
+    }
+
+    const removeOrder = useMutation(api.orders.removeOrder)
+    
+    const handleRemoveOrder = (id: Id<"orders">) => {
+        removeOrder({
+            orderId: id
+        })
+    }
+
     const changeStock =  async (_id: Id<"products">) => {
         await updateStock({id: _id})
     }
+
+    const changePaid = async (orderId: Id<"orders">) => {
+        await updateOrderPayment({ orderId: orderId });
+    };
 
     const setProductToEdit = useEditProduct(
         (state) => state.setProductToEdit
@@ -184,7 +207,107 @@ const DasboardPage = () => {
                                                                 }} className="size-6"/>
                                                             </button>
                                                             <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
-                                                                <RemoveDialog url={url}/>
+                                                                <RemoveDialog 
+                                                                    onConfirm={() => handleRemoveProduct(url)}
+                                                                />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-8 mt-8">
+                        <div className="lg:col-span-2">
+                            <div className="bg-white rounded-xl shadow overflow-hidden">
+                                <div className="px-6 py-4 border-b border-gray-200 flex items-center">
+                                    <h3 className="text-xl font-semibold">Lista de Ordenes</h3>
+                                </div>
+
+                                <div className="overflow-x-auto max-h-120">
+                                    <table className="w-full">
+                                        <thead className="bg-gray-50 sticky top-0">
+                                            <tr>
+                                                <th className="py-3 px-6 text-left">Orden #</th>
+                                                <th className="py-3 px-6 text-left">Cliente</th>
+                                                <th className="py-3 px-6 text-left">Fecha</th>
+                                                <th className="py-3 px-6 text-left">Productos</th>
+                                                <th className="py-3 px-6 text-left">Total</th>
+                                                <th className="py-3 px-6 text-left">Dirección</th>
+                                                <th className="py-3 px-6 text-left">Pagado</th>
+                                                <th className="py-3 px-6 text-left">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-200">
+                                            {orders?.map((order) => (
+                                                <tr key={order._id} className="hover:bg-gray-50">
+                                                    <td className="py-4 px-6 font-mono text-sm">
+                                                        #{order._id.slice(-8)}
+                                                    </td>
+                                                    
+                                                    <td className="py-4 px-6">
+                                                        <div>
+                                                            <p className="font-medium">{order.customerData.name}</p>
+                                                            <p className="text-gray-500 text-sm">{order.customerData.email}</p>
+                                                            <p className="text-gray-500 text-xs">{order.customerData.telefono}</p>
+                                                        </div>
+                                                    </td>
+                                                    
+                                                    <td className="py-4 px-6">
+                                                        <div>
+                                                            <p className="text-sm">
+                                                                {new Date(order.createdAt).toLocaleDateString()}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">
+                                                                {new Date(order.createdAt).toLocaleTimeString()}
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                    
+                                                    <td className="py-4 px-6">
+                                                        <div className="space-y-1">
+                                                            {order.items.map((item, idx) => (
+                                                                <div key={idx} className="text-sm">
+                                                                    <span className="font-medium">{item.quantity}x</span> {item.name}
+                                                                </div>
+                                                            ))}
+                                                            <p className="text-xs text-gray-500 mt-1">
+                                                                {order.items.length} producto{order.items.length !== 1 ? 's' : ''}
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                    
+                                                    <td className="py-4 px-6 font-semibold">
+                                                        ${order.total.toFixed(2)}
+                                                    </td>
+                                                    
+                                                    <td className="py-4 px-6">
+                                                        <div>
+                                                            <p className="font-medium">{order.shippingAddress.calle}</p>
+                                                            <p className="text-gray-500 text-sm">{order.shippingAddress.colonia} - {order.shippingAddress.cp}</p>
+                                                            <p className="text-gray-500 text-xs">{order.shippingAddress.estado}</p>
+                                                        </div>
+                                                    </td>
+
+                                                    <td className="py-4 px-6">
+                                                        {order.payed ? (
+                                                            <CircleCheck onClick={()=> changePaid(order._id)} className="cursor-pointer bg-green-100 rounded-full text-sm"/>
+                                                        ): (
+                                                            <X onClick={()=> changePaid(order._id)} className="cursor-pointer bg-red-100 rounded-full text-sm"/>
+                                                        )}
+                                                    </td>
+
+                                                    <td className="py-4 px-6">
+                                                        <div className="flex space-x-2">
+                                                            <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                                                                <RemoveDialog 
+                                                                    onConfirm={() => handleRemoveOrder(order._id )}
+                                                                />
                                                             </button>
                                                         </div>
                                                     </td>

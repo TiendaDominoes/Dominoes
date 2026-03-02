@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Mail, Phone, Send, CheckCircle, Facebook, Instagram } from 'lucide-react';
-import { MigrationButton } from '../(inicio)/_components/migrate';
 
 type FormErrors = {
     name?: string;
@@ -103,8 +102,6 @@ const ContactPage = () => {
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">Contáctanos</h1>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto">¿Tienes preguntas sobre algun producto? Estamos aquí para ayudarte a crear algo único.</p>
             </div>
-
-            <MigrationButton/>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-10">

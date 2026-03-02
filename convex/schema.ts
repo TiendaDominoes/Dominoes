@@ -9,7 +9,11 @@ export default defineSchema({
         images: v.array(v.string()),
         url: v.string(),
         onStock: v.boolean(),
-        categoryId: v.id("categories")
+        // categoryId: v.union(
+        //     v.id("categories"),
+        //     v.array(v.id("categories"))
+        // )
+        categoryId: v.array(v.id("categories")),
     })
     .index("by_url", ["url"])
     .index("by_category", ["categoryId"]),

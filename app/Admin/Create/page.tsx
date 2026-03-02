@@ -10,7 +10,7 @@ import {
 } from "@/components/upload/uploader-provider";
 import { useEdgeStore } from "@/utils/edgestore";
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { useEditor, type JSONContent } from '@tiptap/react'
+import { type JSONContent } from '@tiptap/react'
 import ProductEditor from "./_components/Editor";
 import { toast } from "sonner";
 import { useEditProduct } from "@/utils/editProduct";
@@ -61,15 +61,16 @@ export function ProductForm({initialData}: ProductProps){
     )
 
     const categories = useQuery(api.products.getCategoriesName, 
-        initialData?.category
-            ? {categoryId: initialData?.category}
+        initialData?.category?.length 
+            ? { categoryId: initialData.category }
             : "skip"
-    ) 
+    )
 
     useEffect(()=>{
         if(categories){
-            setCategory(categories?.parentCategory?.categoryName ?? "")
-            setSubCategory(categories.subcategory?.categoryName ?? "")
+            const categoriesString = categories.map(c => c.subcategory?.categoryName).join(", ")
+            setCategory(categories[0]?.parentCategory?.categoryName ?? "")
+            setSubCategory(categoriesString ?? "")
         }
     }, [categories])
 
@@ -88,8 +89,8 @@ export function ProductForm({initialData}: ProductProps){
         }
     })
     const [slug, setSlug] = useState<string>(initialData?.slug ?? "")
-    const [category, setCategory] = useState<string>(categories?.parentCategory?.categoryName ?? "")
-    const [subCategory, setSubCategory] = useState<string>(categories?.subcategory?.categoryName ?? "")
+    const [category, setCategory] = useState<string>(categories?.[0]?.parentCategory?.categoryName ?? "")
+    const [subCategory, setSubCategory] = useState<string>(categories?.[0]?.subcategory?.categoryName ?? "")
     const [images, setImages] = useState<string[]>(initialData?.images ?? [])
 
     const uploadFn: UploadFn = useCallback(
@@ -173,8 +174,8 @@ export function ProductForm({initialData}: ProductProps){
                 price: price,
                 images: images,
                 slug: slug.replace(' ', '_').toLowerCase(),
-                category: categories!.parentCategory!.categoryName,
-                subcategory: categories!.subcategory!.categoryName
+                category: category,
+                subcategory: subCategory
             })
                 .then(()=> router.push('/Admin'));
                 setProductToEdit(null)

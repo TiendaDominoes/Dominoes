@@ -77,12 +77,18 @@ export const createProduct = mutation({
             args.categoryName
         )
 
-        const subCategoryId = await getOrCreateCategory(
-            ctx,
-            args.subCategoryName,
-            categoryId,
-        )
+        const subcategories = args.subCategoryName.split(", ").map(s => s.trim());
 
+        const subCategoryIds = [];
+        for (const subcategoryName of subcategories) {
+            const subCategoryId = await getOrCreateCategory(
+                ctx,
+                subcategoryName,
+                categoryId,
+            );
+            subCategoryIds.push(subCategoryId);
+        }
+        
         return await ctx.db.insert("products", {
             name: args.name,
             description: args.description,
@@ -90,7 +96,7 @@ export const createProduct = mutation({
             images: args.images,
             url: args.url,
             onStock: true,
-            categoryId: subCategoryId,
+            categoryId: subCategoryIds,
         });
     },
 });
@@ -125,11 +131,17 @@ export const updateProduct = mutation({
             args.category
         )
 
-        const subCategoryId = await getOrCreateCategory(
-            ctx,
-            args.subcategory,
-            categoryId,
-        )
+        const subcategories = args.subcategory.split(", ").map(s => s.trim());
+
+        const subCategoryIds = [];
+        for (const subcategoryName of subcategories) {
+            const subCategoryId = await getOrCreateCategory(
+                ctx,
+                subcategoryName,
+                categoryId,
+            );
+            subCategoryIds.push(subCategoryId);
+        }
 
         const update = await ctx.db.patch(args.id, {
             name: args.name,
@@ -137,7 +149,7 @@ export const updateProduct = mutation({
             price: args.price,
             images: args.images,
             url: args.slug,
-            categoryId: subCategoryId,
+            categoryId: subCategoryIds,
         });
 
         return update;
@@ -267,23 +279,29 @@ export const getCategoriesByParent = query({
 
 export const getCategoriesName = query({
     args: {
-        categoryId: v.optional(v.id("categories"))
+        categoryId: v.optional(v.array(v.id("categories")))
     },
     handler: async (ctx, args) => {
-        const subcategory = await ctx.db
-            .query("categories")
-            .filter((q) => q.eq(q.field("_id"), args.categoryId))
-            .unique()
+        const results = [];
+        
+        for (const categoryId of args.categoryId || []) {
+            const subcategory = await ctx.db
+                .query("categories")
+                .filter((q) => q.eq(q.field("_id"), categoryId))
+                .unique();
 
-        const parentCategory = await ctx.db
-            .query("categories")
-            .filter((q) => q.eq(q.field("_id"), subcategory?.parentCategory))
-            .unique()
+            const parentCategory = await ctx.db
+                .query("categories")
+                .filter((q) => q.eq(q.field("_id"), subcategory?.parentCategory))
+                .unique();
 
-        return {
-            subcategory,
-            parentCategory,
+            results.push({
+                subcategory,
+                parentCategory,
+            });
         }
+        
+        return results;
     }
 })
 
@@ -308,7 +326,7 @@ export const getMultipleProducts = query({
         url: v.array(v.string()),
     },
     handler: async (ctx, args) => {
-        const products = [];
+        const products: any[] = [];
         
         for (const url of args.url) {
             const product = await ctx.db
@@ -349,40 +367,57 @@ export const getProductsByCategories = query({
             )
             .unique();
 
+        if (!parent) {
+            return await ctx.db.query("products")
+                .order("desc")
+                .paginate(args.paginationOpts);
+        }
+
         const children = await ctx.db.query("categories")
             .withIndex("by_parentCategory", q =>
-                q.eq("parentCategory", parent!._id)
+                q.eq("parentCategory", parent._id)
             )
             .collect();
 
         const childIds = children.map(c => c._id);
+        
+        const idsToSearch = args.categoryIds && args.categoryIds.length > 0 
+            ? args.categoryIds 
+            : childIds;
 
-        if(!args.categoryIds || args.categoryIds.length === 0){
-            return await ctx.db.query("products")
-                .filter(q =>
-                    q.or(
-                        ...childIds.map(id=>
-                            q.eq(q.field("categoryId"), id)
-                        )
-                    )
-                )
-                .order("desc")
-                .paginate(args.paginationOpts)
+        if (idsToSearch.length === 0) {
+            return {
+                page: [],
+                isDone: true,
+                continueCursor: args.paginationOpts.cursor || "0",
+            };
         }
 
-        return await ctx.db
-            .query("products")
-            .filter(q =>
-                q.or(
-                    ...args.categoryIds!.map(id =>
-                        q.eq(q.field("categoryId"), id)
-                    )
-                )
-            )
+        const allProducts = await ctx.db.query("products")
             .order("desc")
-            .paginate(args.paginationOpts)
+            .collect();
+
+        const filteredProducts = allProducts.filter(product => {
+            const productCategories = Array.isArray(product.categoryId) 
+                ? product.categoryId 
+                : [product.categoryId];
+            
+            return productCategories.some(catId => 
+                idsToSearch.includes(catId)
+            );
+        });
+
+        const { numItems, cursor } = args.paginationOpts;
+        const start = cursor ? parseInt(cursor) : 0;
+        const end = start + numItems;
+        
+        return {
+            page: filteredProducts.slice(start, end),
+            isDone: end >= filteredProducts.length,
+            continueCursor: end.toString(),
+        };
     }
-})
+});
 
 //Get products for sections as products and newest
 export const getRecentProducts = query({

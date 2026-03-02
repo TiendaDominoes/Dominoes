@@ -1,6 +1,5 @@
 import { Id } from "@/convex/_generated/dataModel";
 import { create } from "zustand";
-import { type JSONContent } from '@tiptap/react'
 
 export type Product = {
     _id: Id<"products">;
@@ -8,7 +7,7 @@ export type Product = {
     price: number;
     description: string;
     slug: string;
-    category: Id<"categories">;
+    category: Id<"categories">[];
     images: string[];
 }
 

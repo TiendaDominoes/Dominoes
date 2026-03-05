@@ -15,6 +15,7 @@ interface CustomerData {
 
 interface ShippingData {
     calle: string;
+    referencia: string;
     colonia: string;
     cp: number;
     ciudad: string;
@@ -132,6 +133,7 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                 telefono: Number(customerData.telefono),
                 mensaje: customerData.mensaje,
                 calle: shippingData.calle,
+                referencia: shippingData.referencia,
                 colonia: shippingData.colonia,
                 cp: Number(shippingData.cp),
                 ciudad: shippingData.ciudad,

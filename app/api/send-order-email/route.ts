@@ -99,6 +99,7 @@ export async function POST(request: Request) {
                                         <h4>Datos de envío:</h4>
                                         <p>
                                             ${orderData.shippingData.calle}<br>
+                                            ${orderData.shippingData.referencia}<br>
                                             ${orderData.shippingData.colonia}<br>
                                             ${orderData.shippingData.ciudad}, ${orderData.shippingData.estado} CP ${orderData.shippingData.cp}
                                         </p>
@@ -180,6 +181,7 @@ export async function POST(request: Request) {
                                     <h3>Dirección de envío:</h3>
                                     <p>
                                         ${orderData.shippingData.calle}<br>
+                                        ${orderData.shippingData.referencia}<br>
                                         ${orderData.shippingData.colonia}<br>
                                         ${orderData.shippingData.ciudad}, ${orderData.shippingData.estado} CP ${orderData.shippingData.cp}
                                     </p>

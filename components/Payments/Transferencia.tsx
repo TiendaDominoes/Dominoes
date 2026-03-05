@@ -16,6 +16,7 @@ interface CustomerData {
 
 interface ShippingData {
     calle: string;
+    referencia: string;
     colonia: string;
     cp: number;
     ciudad: string;
@@ -124,8 +125,7 @@ const Transferencia = ({url, customerData, shippingData}: Props) => {
             
             if (hasPriceChanges) {
                 toast.warning('Algunos precios han sido actualizados');
-            }
-            
+            }   
         }
     }, [url, singleProduct, multipleProducts, state.items]);
 
@@ -156,6 +156,7 @@ const Transferencia = ({url, customerData, shippingData}: Props) => {
                 telefono: Number(customerData.telefono),
                 mensaje: customerData.mensaje,
                 calle: shippingData.calle,
+                referencia: shippingData.referencia,
                 colonia: shippingData.colonia,
                 cp: Number(shippingData.cp),
                 ciudad: shippingData.ciudad,
@@ -193,6 +194,7 @@ const Transferencia = ({url, customerData, shippingData}: Props) => {
                 })
             });
 
+            toast.success('Pago pendiente por verificar');
             setIsOpen(false);
         } catch (error: any){
             toast.error('Hubo un problema con la compra')

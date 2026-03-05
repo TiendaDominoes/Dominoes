@@ -22,6 +22,7 @@ interface Contacto {
 
 interface Direccion {
     calle: string;
+    referencia: string;
     colonia: string;
     cp: number;
     ciudad: string;
@@ -59,6 +60,7 @@ const Checkout = () => {
 
     const [shippingData, setShippingData] = useState<Direccion>({
         calle: '',
+        referencia: '',
         colonia: '',
         cp: 0,
         ciudad: '',
@@ -87,7 +89,7 @@ const Checkout = () => {
         }));
     };
 
-    const handleAddressChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const handleAddressChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
         const { name, value } = e.target;
         setShippingData((prev) => ({
             ...prev,
@@ -118,6 +120,10 @@ const Checkout = () => {
         }
         if(shippingData.calle.trim() === ''){
             toast.error('Calle requerida')
+            return;
+        }
+        if(shippingData.referencia.trim() === ''){
+            toast.error('Referencia requerida')
             return;
         }
         if(shippingData.colonia.trim() === ''){
@@ -244,8 +250,21 @@ const Checkout = () => {
                                         name="calle"
                                         value={shippingData.calle}
                                         onChange={handleAddressChange}
-                                        
                                         placeholder="Calle y número"
+                                    />
+                                </div>
+
+                                <div className='flex flex-col gap-x-2'>
+                                    <div className="w-full items-start flex">
+                                        <label htmlFor="referencia" className='text-lg '>Referencia:</label>
+                                    </div>
+                                    <textarea
+                                        className='p-2 min-h-16 max-h-32 border border-neutral-300 rounded-md'
+                                        id="referencia"
+                                        name="referencia"
+                                        value={shippingData.referencia}
+                                        onChange={handleAddressChange}
+                                        placeholder="Referencia"
                                     />
                                 </div>
 

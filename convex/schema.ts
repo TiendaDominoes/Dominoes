@@ -43,6 +43,7 @@ export default defineSchema({
 
         shippingAddress: v.object({
             calle: v.string(),
+            referencia: v.optional(v.string()),
             colonia: v.string(),
             cp: v.number(),
             ciudad: v.string(),

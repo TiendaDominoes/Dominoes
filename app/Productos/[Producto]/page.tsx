@@ -156,7 +156,7 @@ const ProductoPage = () => {
             </div>
 
             <div className="w-[90%] max-w-300 mt-16">
-                <h2 className="text-3xl font-semibold mb-2">Productos Destacados</h2>
+                <h2 className="text-3xl font-semibold mb-2">Productos Recientes</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                     {products?.map(({ _id, name, price, images, url }) => (
                         <Product key={_id} name={name} price={price} images={images} url={url}/>

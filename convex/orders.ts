@@ -10,6 +10,7 @@ export const createOrder = mutation({
         telefono: v.number(),
         mensaje: v.optional(v.string()),
         calle: v.string(),
+        referencia: v.string(),
         colonia: v.string(),
         cp: v.number(),
         ciudad: v.string(),
@@ -38,6 +39,7 @@ export const createOrder = mutation({
             },
             shippingAddress: {
                 calle: args.calle,
+                referencia: args.referencia,
                 colonia: args.colonia,
                 cp: args.cp,
                 ciudad: args.ciudad,

@@ -9,9 +9,10 @@ import RemoveDialog from "@/components/ui/AlertDialog";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 import { useEditProduct } from "@/utils/editProduct";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@/hooks/use-user";
 import { updateOrderPayment } from "@/convex/orders";
+import { ProductSearch } from "./_components/ProductSearch";
 
 const DasboardPage = () => {
     const router = useRouter();
@@ -19,10 +20,14 @@ const DasboardPage = () => {
     const { user, isLoading, isAdmin } = useUser();
 
     const stats = useQuery(api.products.getProductsStats);
-    const products = useQuery(api.products.getAllProducts);
     const updateStock = useMutation(api.products.updateStock);
     const orders = useQuery(api.orders.getAllOrders);
     const updateOrderPayment = useMutation(api.orders.updateOrderPayment);
+    
+    const [searchResults, setSearchResults] = useState<any[] | null>(null);
+    const products = useQuery(api.products.getAllProducts);
+
+    const displayedProducts = searchResults !== null ? searchResults : products || [];
 
     const handleCreate = () => {
         router.push('/Admin/Create');
@@ -152,8 +157,12 @@ const DasboardPage = () => {
                     <div className="grid grid-cols-1 gap-8">
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-xl shadow overflow-hidden">
-                                <div className="px-6 py-4 border-b border-gray-200 flex items-center">
+                                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                                     <h3 className="text-xl font-semibold">Lista de Productos</h3>
+                                    <ProductSearch 
+                                        onSearchResults={setSearchResults}
+                                        initialProducts={products}
+                                    />
                                 </div>
                                 
                                 <div className="overflow-x-auto max-h-120">
@@ -167,7 +176,7 @@ const DasboardPage = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-200">
-                                            {products?.map(({ _id, name, price, images, url, onStock, categoryId, description }) => (
+                                            {displayedProducts?.map(({ _id, name, price, images, url, onStock, categoryId, description }) => (
                                                 <tr key={_id} className="hover:bg-gray-50">
                                                     <td className="py-4 px-6">
                                                         <Link href={`/Productos/${url}`}>
@@ -225,7 +234,7 @@ const DasboardPage = () => {
                     <div className="grid grid-cols-1 gap-8 mt-8">
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-xl shadow overflow-hidden">
-                                <div className="px-6 py-4 border-b border-gray-200 flex items-center">
+                                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-end">
                                     <h3 className="text-xl font-semibold">Lista de Ordenes</h3>
                                 </div>
 

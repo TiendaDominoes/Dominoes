@@ -430,6 +430,31 @@ export const getRecentProducts = query({
     }
 })
 
+//Search products by name
+export const searchProducts = query({
+    args: {
+        name: v.string(),
+    },
+    handler: async (ctx, args) => {
+        if (!args.name || args.name.trim() === "") {
+            return await ctx.db.query("products")
+                .order("desc")
+                .collect()
+        }
+
+        const term = args.name.toLowerCase().trim();
+        
+        const allProducts = await ctx.db.query("products").collect();
+        
+        const filteredProducts = allProducts.filter(product => 
+            product.name.toLowerCase().includes(term)
+        );
+
+        return filteredProducts.sort((a, b) => b._creationTime - a._creationTime);
+
+    }
+});
+
 //Return the number of products on stock, out of stock and total
 export const getProductsStats = query({
     args: {},

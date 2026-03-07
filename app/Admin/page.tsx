@@ -179,7 +179,7 @@ const DasboardPage = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-200">
-                                            {displayedProducts?.map(({ _id, name, price, images, url, onStock, categoryId, description }) => (
+                                            {displayedProducts?.map(({ _id, name, price, images, url, onStock, categoryId, description, envio }) => (
                                                 <tr key={_id} className="hover:bg-gray-50">
                                                     <td className="py-4 px-6">
                                                         <Link href={`/Productos/${url}`}>
@@ -210,6 +210,7 @@ const DasboardPage = () => {
                                                                         _id: _id,
                                                                         name: name,
                                                                         price: price,
+                                                                        envio: envio,
                                                                         description: description,
                                                                         slug: url,
                                                                         category: categoryId,

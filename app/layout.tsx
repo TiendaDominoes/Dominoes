@@ -44,11 +44,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Mesas de Juego Profesionales',
     description: 'Mesas de juego profesionales para tu hogar.',
-    url: 'https://mesasdejuego.com',
+    url: 'https://www.mesasdejuego.com',
     siteName: 'Mesas de Juego',
     images: [
       {
-        url: 'https://mesasdejuego.com/logo.jpg',
+        url: 'https://www.mesasdejuego.com/logo.jpg',
         width: 1200,
         height: 630,
         alt: 'Mesas de Juego Profesionales',
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   alternates: {
-    canonical: 'https://mesasdejuego.com',
+    canonical: 'https://www.mesasdejuego.com',
   },
   category: 'ecommerce',
 };

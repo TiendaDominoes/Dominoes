@@ -174,6 +174,7 @@ const DasboardPage = () => {
                                             <tr>
                                                 <th className="py-3 px-6 text-left">Producto</th>
                                                 <th className="py-3 px-6 text-left">Precio</th>
+                                                <th className="py-3 px-6 text-left">Envío</th>
                                                 <th className="py-3 px-6 text-left">Stock</th>
                                                 <th className="py-3 px-6 text-left">Acciones</th>
                                             </tr>
@@ -195,6 +196,7 @@ const DasboardPage = () => {
                                                         </Link>
                                                     </td>
                                                     <td className="py-4 px-6 font-semibold">{formatearMoneda(price)}</td>
+                                                    <td className="py-4 px-6 font-semibold">{formatearMoneda(envio)}</td>
                                                     <td className="py-4 px-6">
                                                         {onStock ? (
                                                             <CircleCheck onClick={()=> changeStock(_id)} className="cursor-pointer bg-green-100 rounded-full text-sm"/>

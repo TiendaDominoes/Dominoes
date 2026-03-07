@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /Admin/
+Disallow: /Admin/Create
+Disallow: /Checkout/
+
+Sitemap: https://mesasdejuego.com/sitemap.xml

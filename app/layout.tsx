@@ -7,7 +7,6 @@ import { ConvexClientProvider } from '@/providers/convex-provider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import { EdgeStoreProvider } from '@/utils/edgestore';
 import SearchCommand from '@/components/Search';
 import { CartProvider } from '@/providers/cart-provider';
@@ -19,7 +18,7 @@ const workSans = Work_Sans({subsets: ["latin"]});
 
 export const metadata: Metadata = {
   title: "Dominoes | Mesas de Juegos",
-  description: "La mesa que hará legendarias tus noches con amigos.",
+  description: 'Mesas de juego profesionales para tu hogar. Calidad superior, diseño exclusivo y envíos a todo México.', 
   other: {
     'mercadopago-sdk': 'v2',
   },
@@ -30,7 +29,38 @@ export const metadata: Metadata = {
         href:"/logo-cropped.jpg"
       }
     ]
-  }
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    title: 'Mesas de Juego Profesionales',
+    description: 'Mesas de juego profesionales para tu hogar.',
+    url: 'https://mesasdejuego.com',
+    siteName: 'Mesas de Juego',
+    images: [
+      {
+        url: 'https://mesasdejuego.com/logo.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Mesas de Juego Profesionales',
+      },
+    ],
+    locale: 'es_MX',
+    type: 'website',
+  },
+  alternates: {
+    canonical: 'https://mesasdejuego.com',
+  },
+  category: 'ecommerce',
 };
 
 export default function RootLayout({

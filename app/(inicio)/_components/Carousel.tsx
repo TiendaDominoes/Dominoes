@@ -38,6 +38,7 @@ const CarouselComponent = () => {
                     _id: product._id,
                     name: product.name,
                     price: product.price,
+                    envio: product.envio,
                     image: product.images[0],
                     url: product.url,
                     quantity: 1

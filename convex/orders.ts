@@ -105,3 +105,40 @@ export const removeOrder = mutation({
         return await ctx.db.delete(args.orderId);
     }
 });
+
+export const searchByCustomer = query({
+    args: {
+        name: v.string(),
+        month: v.optional(v.number()),
+        year: v.optional(v.number()),
+    },
+    handler: async (ctx, args) => {
+        let orders = await ctx.db
+            .query("orders").order("desc").collect();
+
+        if(args.name && args.name.trim() !== ''){
+            const term = args.name.toLowerCase().trim();
+            orders = orders.filter(order =>
+                order.customerData.name.toLowerCase().includes(term)
+            )
+        }
+
+        if (args.month !== undefined && args.year !== undefined) {
+            const startOfMonth = new Date(args.year, args.month - 1, 1).getTime();
+            const endOfMonth = new Date(args.year, args.month, 0, 23, 59, 59, 999).getTime();
+            
+            orders = orders.filter(order => 
+                order.createdAt >= startOfMonth && order.createdAt <= endOfMonth
+            );
+        } else if (args.year !== undefined) {
+            const startOfYear = new Date(args.year, 0, 1).getTime();
+            const endOfYear = new Date(args.year, 11, 31, 23, 59, 59, 999).getTime();
+            
+            orders = orders.filter(order => 
+                order.createdAt >= startOfYear && order.createdAt <= endOfYear
+            );
+        }
+        
+        return orders;
+    }
+})

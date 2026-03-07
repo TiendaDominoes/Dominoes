@@ -59,6 +59,7 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                 _id: singleProduct._id,
                 name: singleProduct.name,
                 price: singleProduct.price,
+                envio: singleProduct.envio,
                 quantity: 1,
                 image: singleProduct.images?.[0] || '',
                 onStock: singleProduct.onStock,
@@ -86,6 +87,7 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                     ...item,
                     name: dbProduct.name,
                     price: dbProduct.price,
+                    envio: dbProduct.envio,
                     image: dbProduct.images?.[0] || '',
                     onStock: dbProduct.onStock
                 };
@@ -96,7 +98,7 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
             
             const hasPriceChanges = state.items.some((item: any) => {
                 const dbProduct = productsMap.get(item._id);
-                return dbProduct && dbProduct.price !== item.price;
+                return dbProduct && (dbProduct.price !== item.price || dbProduct.envio !== item.envio);
             });
             
             if (hasPriceChanges) {
@@ -122,10 +124,17 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                 return;
             }
 
-            const total = validatedItems.reduce(
+            const subtotal = validatedItems.reduce(
                 (sum, item) => sum + (item.price * item.quantity), 
                 0
             );
+
+            const envio = validatedItems.reduce(
+                (sum, item) => sum + (item.envio * item.quantity), 
+                0
+            );
+
+            const total = subtotal+envio
 
             const orderId = await createOrder({
                 name: customerData.nombre,
@@ -155,7 +164,7 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                 items: validatedItems,
                 total: total,
             };
-                    
+
             await fetch('/api/send-order-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -177,7 +186,7 @@ const CheckoutMP = ({url, customerData, shippingData}: Props) => {
                     title: item.name,
                     description: item.name,
                     quantity: item.quantity,
-                    unit_price: Number(item.price),
+                    unit_price: Number(item.price+item.envio),
                     currency_id: "MX",
                     picture_url: item.image || ''
                 })),

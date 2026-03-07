@@ -78,6 +78,7 @@ export function ProductForm({initialData}: ProductProps){
 
     const [name, setName] = useState<string>(initialData?.name ?? "");
     const [price, setPrice] = useState<number>(initialData?.price ?? 0)
+    const [envio, setEnvio] = useState<number>(initialData?.envio ?? 0)
     const [description, setDescription] = useState<JSONContent | null>(()=> {
         if(!initialData?.description) return null;
 
@@ -137,6 +138,10 @@ export function ProductForm({initialData}: ProductProps){
             toast.error('El precio es requerido');
             return false;
         }
+        if (envio<0) {
+            toast.error('Costo de envio requerido');
+            return false;
+        }
         if (description === null) {
             toast.error('Descripción requerida');
             return false;
@@ -172,6 +177,7 @@ export function ProductForm({initialData}: ProductProps){
                 name: name,
                 description: JSON.stringify(description),
                 price: price,
+                envio: envio,
                 images: images,
                 slug: slug.replace(' ', '_').toLowerCase(),
                 category: category,
@@ -190,6 +196,7 @@ export function ProductForm({initialData}: ProductProps){
                 name: name,
                 description: JSON.stringify(description),
                 price: price,
+                envio: envio,
                 images: images,
                 url: slug.replace(' ', '_').toLowerCase(),
                 onStock: true,
@@ -287,15 +294,26 @@ export function ProductForm({initialData}: ProductProps){
                                     className='text-[30px] font-semibold mb-2 focus:outline-none w-full max-w-215 rounded-md'
                                     placeholder="Nombre"
                                 />
-                                <input
-                                    type="number"
-                                    id="precio"
-                                    name="precio"
-                                    value={price}
-                                    onChange={(e)=>setPrice(+e.target.value)}
-                                    className='text-2xl font-semibold text-[#B86112] mb-2 focus:outline-none w-full max-w-50 rounded-md'
-                                    placeholder="Precio"
-                                />
+                                <div className="flex gap-x-2">
+                                    <input
+                                        type="number"
+                                        id="precio"
+                                        name="precio"
+                                        value={price}
+                                        onChange={(e)=>setPrice(+e.target.value)}
+                                        className='text-2xl font-semibold text-[#B86112] mb-2 focus:outline-none w-full max-w-50 rounded-md'
+                                        placeholder="Precio"
+                                    />
+                                    <input
+                                        type="number"
+                                        id="envio"
+                                        name="envio"
+                                        value={envio}
+                                        onChange={(e)=>setEnvio(+e.target.value)}
+                                        className='text-2xl font-semibold text-[#B86112] mb-2 focus:outline-none w-full max-w-50 rounded-md'
+                                        placeholder="Envio"
+                                    />
+                                </div>
                                 <ProductEditor value={description} onChange={setDescription}/>
                                 <input 
                                     type="text"

@@ -38,8 +38,11 @@ const Checkout = () => {
 
     const isDirectCheckout = !!url
 
-    const total = state.items.reduce(
-        (acc: any, item: CartItem) => acc + item.price * item.quantity, 0
+    const subtotal = state.items.reduce(
+        (acc: number, item: CartItem) => acc + item.price * item.quantity, 0
+    )
+    const envio = state.items.reduce(
+        (acc: number, item: CartItem) => acc + item.envio * item.quantity, 0
     )
 
     const user = useQuery(api.users.getCurrentUser);
@@ -373,16 +376,24 @@ const Checkout = () => {
                                     <img src={product?.images[0]} alt={product?.name} className="w-full h-full object-cover"/>
                                 </Link>
                                 <div className="ml-3">
-                                    <Link href={`/Productos/${product?.url}`} className="font-medium text-lg text-gray-800 truncate pr-2">{product?.name}</Link>
+                                    <Link href={`/Productos/${product?.url}`} className="font-medium text-lg text-gray-800 truncate max-w-[100px] pr-2">{product?.name}</Link>
                                     <p className='text-md font-medium text-[#B86112] mb-2'>{formatearMoneda(product!.price)}</p>
                                 </div>
                             </div>
 
                             <div className="border-t mt-4 border-gray-200 p-4">
-                                <div className="flex justify-between items-center mb-4">
-                                    <span className="text-xl font-semibold">Total:</span>
-                                    <span className="text-xl font-bold text-[#B86112]">{formatearMoneda(product!.price)}</span>
-                                </div>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="text-lg font-semibold text-neutral-700">Subtotal:</span>
+                                        <span className="text-lg font-bold text-[#B86112CC]">{formatearMoneda(product!.price)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="text-lg font-semibold text-neutral-700">Envio:</span>
+                                        <span className="text-lg font-bold text-[#B86112CC]">{formatearMoneda(product!.envio)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="text-xl font-semibold">Total:</span>
+                                        <span className="text-xl font-bold text-[#B86112]">{formatearMoneda(product!.price + product!.envio)}</span>
+                                    </div>
                                 
                                 <div className='flex justify-end mt-2'>
                                     {validated ? (
@@ -463,8 +474,16 @@ const Checkout = () => {
                                 
                                 <div className="border-t mt-4 border-gray-200 p-4">
                                     <div className="flex justify-between items-center mb-4">
+                                        <span className="text-lg font-semibold text-neutral-700">Subtotal:</span>
+                                        <span className="text-lg font-bold text-[#B86112CC]">{formatearMoneda(subtotal)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="text-lg font-semibold text-neutral-700">Envio:</span>
+                                        <span className="text-lg font-bold text-[#B86112CC]">{formatearMoneda(envio)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center mb-4">
                                         <span className="text-xl font-semibold">Total:</span>
-                                        <span className="text-xl font-bold text-[#B86112]">{formatearMoneda(total)}</span>
+                                        <span className="text-xl font-bold text-[#B86112]">{formatearMoneda(subtotal+envio)}</span>
                                     </div>
                                     
                                     <div className='flex justify-end mt-2'>

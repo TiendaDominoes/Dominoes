@@ -145,10 +145,17 @@ const Transferencia = ({url, customerData, shippingData}: Props) => {
                 return;
             }
 
-            const total = validatedItems.reduce(
+            const subtotal = validatedItems.reduce(
                 (sum, item) => sum + (item.price * item.quantity), 
                 0
             );
+            
+            const envio = validatedItems.reduce(
+                (sum, item) => sum + (item.envio * item.quantity), 
+                0
+            );
+
+            const total = subtotal+envio
             
             const orderId = await createOrder({
                 name: customerData.nombre,

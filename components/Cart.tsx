@@ -129,7 +129,7 @@ const Cart = () => {
                     {state.items.length > 0 && (
                         <div className="border-t border-gray-200 p-4">
                             <div className="flex justify-between items-center mb-4">
-                                <span className="font-semibold text-gray-700">Total:</span>
+                                <span className="font-semibold text-gray-700">Subtotal:</span>
                                 <span className="text-xl font-bold text-[#B86112]">{formatearMoneda(total)}</span>
                             </div>
                             

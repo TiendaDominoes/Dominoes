@@ -5,6 +5,7 @@ export type Product = {
     _id: Id<"products">;
     name: string;
     price: number;
+    envio: number,
     description: string;
     slug: string;
     category: Id<"categories">[];

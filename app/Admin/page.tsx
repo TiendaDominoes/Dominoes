@@ -11,8 +11,8 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useEditProduct } from "@/utils/editProduct";
 import { useEffect, useState } from "react";
 import { useUser } from "@/hooks/use-user";
-import { updateOrderPayment } from "@/convex/orders";
 import { ProductSearch } from "./_components/ProductSearch";
+import { OrderFilter } from "./_components/OrderFilter";
 
 const DasboardPage = () => {
     const router = useRouter();
@@ -21,13 +21,16 @@ const DasboardPage = () => {
 
     const stats = useQuery(api.products.getProductsStats);
     const updateStock = useMutation(api.products.updateStock);
-    const orders = useQuery(api.orders.getAllOrders);
     const updateOrderPayment = useMutation(api.orders.updateOrderPayment);
     
     const [searchResults, setSearchResults] = useState<any[] | null>(null);
+    const [filteredOrders, setFilteredOrders] = useState<any[] | null>(null);
+    
     const products = useQuery(api.products.getAllProducts);
+    const orders = useQuery(api.orders.getAllOrders);
 
     const displayedProducts = searchResults !== null ? searchResults : products || [];
+    const displayedOrders = filteredOrders !== null ? filteredOrders : orders || [];
 
     const handleCreate = () => {
         router.push('/Admin/Create');
@@ -234,8 +237,12 @@ const DasboardPage = () => {
                     <div className="grid grid-cols-1 gap-8 mt-8">
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-xl shadow overflow-hidden">
-                                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-end">
+                                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                                     <h3 className="text-xl font-semibold">Lista de Ordenes</h3>
+                                    <OrderFilter 
+                                        onFilterResults={setFilteredOrders}
+                                        initialOrders={orders}
+                                    />
                                 </div>
 
                                 <div className="overflow-x-auto max-h-120">
@@ -253,7 +260,7 @@ const DasboardPage = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-200">
-                                            {orders?.map((order) => (
+                                            {displayedOrders?.map((order) => (
                                                 <tr key={order._id} className="hover:bg-gray-50">
                                                     <td className="py-4 px-6 font-mono text-sm">
                                                         #{order._id.slice(-8)}
@@ -280,7 +287,7 @@ const DasboardPage = () => {
                                                     
                                                     <td className="py-4 px-6">
                                                         <div className="space-y-1">
-                                                            {order.items.map((item, idx) => (
+                                                            {order.items.map((item: any, idx: any) => (
                                                                 <div key={idx} className="text-sm">
                                                                     <span className="font-medium">{item.quantity}x</span> {item.name}
                                                                 </div>

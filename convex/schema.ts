@@ -6,6 +6,8 @@ export default defineSchema({
         name: v.string(),
         description: v.string(),
         price: v.number(),
+        // envio: v.optional(v.number()),
+        envio: v.number(),
         images: v.array(v.string()),
         url: v.string(),
         onStock: v.boolean(),

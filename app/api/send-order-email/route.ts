@@ -19,6 +19,7 @@ export async function POST(request: Request) {
                 <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: center;">${item.quantity}</td>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${item.price.toFixed(2)}</td>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${(item.price * item.quantity).toFixed(2)}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${(item.envio * item.quantity).toFixed(2)}</td>
             </tr>
         `).join('');
 
@@ -85,6 +86,7 @@ export async function POST(request: Request) {
                                                     <th>Cantidad</th>
                                                     <th>Precio</th>
                                                     <th>Subtotal</th>
+                                                    <th>Envio</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -194,6 +196,7 @@ export async function POST(request: Request) {
                                                 <th>Cantidad</th>
                                                 <th>Precio</th>
                                                 <th>Subtotal</th>
+                                                <th>Envio</th>
                                             </tr>
                                         </thead>
                                         <tbody>

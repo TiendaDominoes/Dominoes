@@ -114,6 +114,7 @@ const ProductoPage = () => {
                                             _id: product._id,
                                             name: product.name,
                                             price: product.price,
+                                            envio: product.envio,
                                             image: product.images[0],
                                             url: product.url,
                                             quantity: 1
@@ -141,6 +142,7 @@ const ProductoPage = () => {
                                 _id: product._id,
                                 name: product.name,
                                 price: product.price,
+                                envio: product.envio!,
                                 description: product.description,
                                 slug: product.url,
                                 category: product.categoryId,
